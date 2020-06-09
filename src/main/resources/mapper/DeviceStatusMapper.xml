@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.bme.task.dao.mysql.DeviceStatusMapper">
+
+    <select id="selectDeviceList" resultType="map" parameterType="list">
+        SELECT
+        t.device_id deviceId,
+        t.customer_id customerId,
+        t.device_no deviceNo,
+        t.type_id typeId
+        FROM
+        t_device t
+        INNER JOIN t_device_type t2 ON t.type_id = t2.type_id
+        WHERE
+        t2.category_code = 1
+        AND t.`status` =1
+        <if test="list != null">
+            AND t.customer_id IN
+            <foreach collection="list" item="customerId" separator="," open="(" close=")">
+                #{customerId}
+            </foreach>
+        </if>
+    </select>
+
+    <insert id="insert" parameterType="list">
+        INSERT INTO t_device_status ( device_id, customer_id,outline,normal,ex,exceed,outline_time, normal_time,
+        ex_time, exceed_time, create_time )
+        VALUES
+        <foreach collection="list" item="s" separator=",">
+            ( #{s.deviceId},#{s.customerId},#{s.outline},#{s.normal},#{s.ex},#{s.exceed },#{s.outlineTime},
+            #{s.normalTime}, #{s.exTime}, #{s.exceedTime}, #{s.createTime})
+        </foreach>
+
+    </insert>
+</mapper>

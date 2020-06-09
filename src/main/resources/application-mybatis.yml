@@ -1,0 +1,18 @@
+mybatis:
+  #Mybatis mapper配置文件位置
+  mapper-locations: classpath:mapper/*
+  #Mybatis外置config配置文件位置
+  #config-location: classpath:mybatis-config.xml
+  #该包下类启用别名
+#  type-aliases-package: com.bme.sso
+  configuration:
+    #开启驼峰命名法
+    map-underscore-to-camel-case: true
+    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl #打印sql语句,调试用
+    call-setters-on-nulls: true
+pagehelper:
+  helperDialect: mysql
+  reasonable: true
+  supportMethodsArguments: true
+  params: count=countSql
+debug: true

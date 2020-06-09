@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.bme.task.dao.tidb.DataStatusCountMapper">
+
+
+    <select id="selectDeviceIndexStandard" resultType="com.bme.task.vo.DeviceIndexStandard">
+        SELECT * FROM t_device_index_standard
+    </select>
+
+    <select id="countWzExceptionAndExceed" parameterType="com.bme.task.vo.DeviceIndexStandard" resultType="com.bme.task.vo.DeviceDataStatus" >
+        <![CDATA[
+            SELECT
+                device_id,
+                customer_id,
+                sn,
+                COUNT( 1 ) total,
+                ROUND(COUNT(1)/#{frequency},4) reportRate,
+                COUNT(k05 < #{k05Down} OR k05 >= #{k05Up} OR k06 < #{k06Down} OR k06 >= #{k06Up} OR NULL ) exCount,
+                COUNT( ( k05 > #{k05ExceedDown} AND k05 < #{k05ExceedUp} ) OR ( k06 > #{k06ExceedDown} AND k06 < #{k06ExceedUp} ) OR NULL ) AS exceedCount
+            FROM
+                t_factory_monitor
+            WHERE
+                monitor_id > #{startTime}
+                AND monitor_id < #{endTime}
+                AND customer_id = #{customerId}
+                AND k05 IS NOT NULL
+            GROUP BY
+                device_id,
+                customer_id,
+                sn
+        ]]>
+    </select>
+
+    <select id="countTspExceptionAndExceed" parameterType="com.bme.task.vo.DeviceIndexStandard" resultType="com.bme.task.vo.DeviceDataStatus">
+        <![CDATA[
+            SELECT
+                device_id,
+                customer_id,
+                sn,
+                COUNT( 1 ) total,
+                ROUND(COUNT(1)/#{frequency},4) reportRate,
+                COUNT( k07 < #{k07Down} OR k07 >= #{k07Up} OR NULL ) exCount,
+                COUNT( ( k07 > #{k07ExceedDown} AND k07 < #{k07ExceedUp} ) OR NULL ) AS exceed
+            FROM
+                t_factory_monitor
+            WHERE
+                monitor_id > #{startTime}
+                AND monitor_id < #{endTime}
+                AND customer_id = #{customerId}
+                AND k07 IS NOT NULL
+            GROUP BY
+                device_id,
+                customer_id,
+                sn
+        ]]>
+    </select>
+
+    <select id="countVocExceptionAndExceed" parameterType="com.bme.task.vo.DeviceIndexStandard" resultType="com.bme.task.vo.DeviceDataStatus">
+        <![CDATA[
+            SELECT
+                device_id,
+                customer_id,
+                sn,
+                AVG(k08),
+                COUNT( 1 ) total,
+                ROUND(COUNT(1)/#{frequency},4) reportRate,
+                COUNT( k08 < #{k08Down} OR k08 >= #{k08Up} OR NULL ) exCount,
+                COUNT( ( k08 > #{k08ExceedDown} AND k08 < #{k08ExceedUp} ) OR NULL ) AS exceed
+            FROM
+                t_factory_monitor
+            WHERE
+                monitor_id > #{startTime}
+                AND monitor_id < #{endTime}
+                AND customer_id = #{customerId}
+                AND k08 IS NOT NULL
+            GROUP BY
+                device_id,
+                customer_id,
+                sn
+        ]]>
+    </select>
+</mapper>

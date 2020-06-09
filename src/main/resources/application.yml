@@ -1,0 +1,15 @@
+server:
+  servlet:
+    context-path: /bme-task
+  port: 9011
+spring:
+  thymeleaf:
+    prefix: classpath:/templates/
+    suffix: .html
+    cache: false
+    enabled: true
+    encoding: UTF-8
+    mode: HTML
+  profiles:
+    active: [datasource,mybatis,redis]
+

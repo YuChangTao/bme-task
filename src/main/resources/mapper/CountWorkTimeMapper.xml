@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.bme.task.dao.tidb.CountWorkTimeMapper">
+
+    <!--统计纳膜工作时长-->
+    <select id="countNanofiltration" resultType="map" parameterType="map">
+        SELECT * FROM (SELECT
+            device_id deviceId,
+            device_no deviceNo,
+	        customer_id customerId,
+            COUNT( nm_status = 1 OR NULL ) * 30 workTime
+        FROM
+            t_nanofiltration_history
+        WHERE
+            monitor_id > #{startTime}
+            and monitor_id &lt; #{endTime}
+        GROUP BY
+            device_id,device_no,customer_id) t WHERE t.workTime>0
+    </select>
+
+    <!--统计天雾和雾炮工作时长-->
+    <select id="countWpTw" resultType="map" parameterType="map">
+        SELECT * FROM (SELECT
+            device_id deviceId,
+            device_no deviceNo,
+	        customer_id customerId,
+            SUM( run_status ) workTime
+        FROM
+            t_wp_tw_history
+        WHERE
+            monitor_id > #{startTime}
+            and monitor_id &lt; #{endTime}
+        GROUP BY
+            device_id,device_no,customer_id) t WHERE t.workTime>0
+    </select>
+
+    <!--统计除尘器工作时长-->
+    <select id="countDuster" parameterType="map" resultType="map">
+        SELECT t.deviceId,t.customerId,MAX(t.workTime) workTime FROM (
+            SELECT
+                device_id deviceId,
+                customer_id customerId,
+                COUNT( `value`>0 OR NULL ) * 60 workTime
+            FROM
+                t_duster_history
+            WHERE
+                monitor_id > #{startTime}
+                and monitor_id &lt; #{endTime}
+            GROUP BY
+                device_id,customer_id,signal_id) t
+        WHERE t.workTime>0 GROUP BY t.deviceId,t.customerId
+    </select>
+</mapper>

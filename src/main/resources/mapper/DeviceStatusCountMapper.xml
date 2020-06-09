@@ -1,0 +1,183 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.bme.task.dao.tidb.DeviceStatusCountMapper">
+
+    <!--统计微站工作状态-->
+    <select id="countWzStatus" parameterType="com.bme.task.vo.DeviceIndexStandard" resultType="map" >
+        <![CDATA[
+
+        SELECT
+            t.device_id deviceId,
+            t.customer_id customerId,
+            t.sn,
+        CASE
+
+            WHEN t.exCount / t.total > #{exThreshold} THEN
+            2
+            WHEN t.exceed / t.total  > #{exceedThreshold} THEN
+            3 ELSE 1
+            END AS state
+        FROM
+            (
+            SELECT
+                device_id,
+                customer_id,
+                sn,
+                COUNT( 1 ) total,
+                COUNT(k05 < #{k05Down} OR k05 >= #{k05Up} OR k06 < #{k06Down} OR k06 >= #{k06Up} OR NULL ) exCount,
+                COUNT( ( k05 > #{k05ExceedDown} AND k05 < #{k05ExceedUp} ) OR ( k06 > #{k06ExceedDown} AND k06 < #{k06ExceedUp} ) OR NULL ) AS exceed
+            FROM
+                t_factory_monitor
+            WHERE
+                monitor_id > #{startTime}
+                AND monitor_id < #{endTime}
+                AND customer_id = #{customerId}
+                AND k05 IS NOT NULL
+            GROUP BY
+                device_id,
+                customer_id,
+                sn
+        ) t
+
+        ]]>
+    </select>
+
+    <!--统计TSP工作状态-->
+    <select id="countTspStatus" parameterType="com.bme.task.vo.DeviceIndexStandard" resultType="map">
+        <![CDATA[
+
+            SELECT
+                t.device_id deviceId,
+                t.customer_id customerId,
+                t.sn,
+            CASE
+
+                WHEN t.exCount / t.total > #{exThreshold} THEN
+                2
+                WHEN t.exceed / t.total > #{exceedThreshold} THEN
+                3 ELSE 1
+                END AS state
+            FROM
+                (
+                SELECT
+                    device_id,
+                    customer_id,
+                    sn,
+                    COUNT( 1 ) total,
+                    COUNT( k07 < #{k07Down} OR k07 >= #{k07Up} OR NULL ) exCount,
+                    COUNT( ( k07 > #{k07ExceedDown} AND k07 < #{k07ExceedUp} ) OR NULL ) AS exceed
+                FROM
+                    t_factory_monitor
+                WHERE
+                    monitor_id > #{startTime}
+                    AND monitor_id < #{endTime}
+                    AND customer_id = #{customerId}
+                    AND k07 IS NOT NULL
+                GROUP BY
+                    device_id,
+                    customer_id,
+                    sn
+            ) t
+
+        ]]>
+    </select>
+
+    <!--统计VOC工作状态-->
+    <select id="countVocStatus" parameterType="com.bme.task.vo.DeviceIndexStandard" resultType="map">
+        <![CDATA[
+
+            SELECT
+                t.device_id deviceId,
+                t.customer_id customerId,
+                t.sn,
+            CASE
+
+                WHEN t.exCount / t.total > #{exThreshold} THEN
+                2
+                WHEN t.exceed / t.total > #{exceedThreshold} THEN
+                3 ELSE 1
+                END AS state
+            FROM
+                (
+                SELECT
+                    device_id,
+                    customer_id,
+                    sn,
+                    AVG(k08),
+                    COUNT( 1 ) total,
+                    COUNT( k08 < #{k08Down} OR k08 >= #{k08Up} OR NULL ) exCount,
+                    COUNT( ( k08 > #{k08ExceedDown} AND k08 < #{k08ExceedUp} ) OR NULL ) AS exceed
+                FROM
+                    t_factory_monitor
+                WHERE
+                    monitor_id > #{startTime}
+                    AND monitor_id < #{endTime}
+                    AND customer_id = #{customerId}
+                    AND k08 IS NOT NULL
+                GROUP BY
+                    device_id,
+                    customer_id,
+                    sn
+            ) t
+
+        ]]>
+    </select>
+
+    <insert id="insert" parameterType="list">
+        INSERT INTO t_device_status_minute (device_id,state,customer_id,create_time,count_dimension)
+        VALUES
+        <foreach collection="list" separator="," item="t">
+            ( #{t.deviceId}, #{t.state}, #{t.customerId}, #{t.createTime},#{t.countDimension})
+        </foreach>
+
+    </insert>
+
+
+    <select id="selectOnline" resultType="long" parameterType="map">
+        <![CDATA[
+        SELECT DISTINCT
+            device_id deviceId
+        FROM
+            t_factory_monitor
+        WHERE
+            monitor_id > #{startTime}
+            AND monitor_id < #{endTime}
+        ]]>
+    </select>
+
+    <select id="countHourStatus" parameterType="map" resultType="map">
+        <![CDATA[
+            SELECT
+                t.device_id deviceId,
+                t.customer_id customerId,
+                t.outline,
+                t.normal,
+                t.ex,
+                t.exceed,
+                t.countDimension,
+                t.outline * t.countDimension outlineTime,
+                t.normal * t.countDimension normalTime,
+                t.ex * t.countDimension exTime,
+                t.exceed * t.countDimension exceedTime
+            FROM
+                (
+            SELECT
+                device_id,
+                customer_id,
+                COUNT( state = 0 OR NULL ) outline,
+                COUNT( state = 1 OR NULL ) normal,
+                COUNT( state = 2 OR NULL ) ex,
+                COUNT( state = 3 OR NULL ) exceed,
+                AVG( count_dimension ) countDimension
+            FROM
+                t_device_status_minute
+            WHERE
+                create_time > #{startTime}
+                AND create_time < #{endTime}
+            GROUP BY
+                device_id,
+                customer_id
+                ) t
+        ]]>
+    </select>
+</mapper>

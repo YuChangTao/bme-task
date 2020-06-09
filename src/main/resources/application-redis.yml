@@ -1,0 +1,10 @@
+spring:
+  redis:
+    password: 1qaz@WSX
+    cluster:
+      max-redirects: 10
+      nodes: 172.31.140.201:9000,172.31.140.202:9000,172.31.140.203:9000
+    jedis:
+      pool:
+        max-active: 300
+        max-idle: 30
