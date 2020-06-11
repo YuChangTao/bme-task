@@ -31,12 +31,11 @@ public class DeviceStatusCountTaskController {
     private DeviceStatusCountService deviceStatusCountService;
 
     /**
-     * 废弃
      * @param requestParam
      * @return
      */
-    @RequestMapping("countMinute")
-    public String countMinuteState (@RequestBody(required = false) String requestParam) {
+    @RequestMapping("count")
+    public String countMinuteState(@RequestBody(required = false) String requestParam) {
         if (StringUtils.isEmpty(requestParam)) {
             logger.warn("统计监控设备状态执行参数requestParam为空");
             return null;
@@ -51,60 +50,22 @@ public class DeviceStatusCountTaskController {
             if (endTimeStr != null && intervalTime != null) {
 
                 endTime = CommonUtil.dateFormat.parse((String) endTimeStr).getTime();
-                long interval = (long)Double.parseDouble(intervalTime.toString());
+                long interval = (long) Double.parseDouble(intervalTime.toString());
                 long startTime = endTime - interval;
-                result = deviceStatusCountService.countMinuteDeviceStatus(startTime, endTime,interval);
+                result = deviceStatusCountService.countDeviceStatus(startTime, endTime, interval);
             } else if (intervalTime != null) {
                 endTime = System.currentTimeMillis();
-                long interval = (long)Double.parseDouble(intervalTime.toString());
+                long interval = (long) Double.parseDouble(intervalTime.toString());
                 long startTime = endTime - interval;
-                result = deviceStatusCountService.countMinuteDeviceStatus(startTime, endTime,interval);
+                result = deviceStatusCountService.countDeviceStatus(startTime, endTime, interval);
             }
         } catch (ParseException e) {
             e.printStackTrace();
-            logger.warn("统计监控设备状态发生异常：{}",e.getMessage());
+            logger.warn("统计监控设备状态发生异常：{}", e.getMessage());
             return null;
         }
-        return result? ResultUtil.success(): null;
+        return result ? ResultUtil.success() : null;
 
     }
 
-    /**
-     * 废弃
-     * @param requestParam
-     * @return
-     */
-    @RequestMapping("countHour")
-    public String countHourState (@RequestBody(required = false) String requestParam) {
-        if (StringUtils.isEmpty(requestParam)) {
-            logger.warn("统计监控设备小时状态执行参数requestParam为空");
-            return null;
-        }
-        boolean result = false;
-        try {
-            Gson gson = new Gson();
-            Map<String, Object> map = gson.fromJson(requestParam, Map.class);
-            Object endTimeStr = map.get("endTimeStr");
-            Object intervalTime = map.get("intervalTime");
-            Long endTime;
-            if (endTimeStr != null && intervalTime != null) {
-
-                endTime = CommonUtil.dateFormat.parse((String) endTimeStr).getTime();
-                long interval = (long)Double.parseDouble(intervalTime.toString());
-                long startTime = endTime - interval;
-                result = deviceStatusCountService.countHourDeviceStatus(startTime, endTime);
-            } else if (intervalTime != null) {
-                endTime = System.currentTimeMillis();
-                long interval = (long)Double.parseDouble(intervalTime.toString());
-                long startTime = endTime - interval;
-                result = deviceStatusCountService.countHourDeviceStatus(startTime, endTime);
-            }
-        } catch (ParseException e) {
-            e.printStackTrace();
-            logger.warn("统计监控设备小时状态发生异常：{}",e.getMessage());
-            return null;
-        }
-        return result? ResultUtil.success(): null;
-
-    }
 }

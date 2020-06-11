@@ -1,5 +1,8 @@
 package com.bme.task.service;
 
+import com.bme.task.vo.DeviceStatus;
+
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
@@ -11,31 +14,17 @@ import java.util.Map;
  */
 public interface DeviceStatusCountService {
 
-
     /**
-     * 统计设备分钟工作状态
-     * @param startTime
-     * @param endTime
-     * @param intervalTime
-     * @return
-     */
-    boolean countMinuteDeviceStatus(long startTime, Long endTime,long intervalTime);
-
-
-    /**
-     * 统计设备小时工作状态
+     * 统计设备工作状态
+     *
      * @param startTime
      * @param endTime
      * @return
      */
-    boolean countHourDeviceStatus(long startTime, Long endTime);
+    boolean countDeviceStatus(long startTime, long endTime, long interval);
 
-    /**
-     * 插入设备工作状态
-     * @param list
-     * @return
-     */
-    Integer insert(List<Map<String, Object>> list);
 
-    Integer insertStatus(List<Map<String, Object>> list);
+    Integer insert(List<DeviceStatus> deviceStatusList);
+
+    Integer update(List<Long> offList, Date createTime, long interval);
 }
