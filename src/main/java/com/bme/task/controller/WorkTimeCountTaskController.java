@@ -16,7 +16,7 @@ import java.text.ParseException;
 import java.util.Map;
 
 /**
- * 工作时长统计任务
+ * 工作时长统计任务（废弃）
  *
  * @author yutyi
  * @date 2020/06/03

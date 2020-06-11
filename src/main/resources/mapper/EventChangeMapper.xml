@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.bme.task.dao.tidb.EventChangeMapper">
+
+    <insert id="insert" parameterType="map">
+        INSERT INTO t_event_change(device_id,device_no,event_type,customer_id,create_time)
+        VALUE (#{deviceId},#{sn},#{eventType},#{customerNum},#{createTime})
+    </insert>
+</mapper>

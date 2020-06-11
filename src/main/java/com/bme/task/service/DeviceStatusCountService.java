@@ -1,12 +1,10 @@
 package com.bme.task.service;
 
-import org.apache.ibatis.annotations.Mapper;
-
 import java.util.List;
 import java.util.Map;
 
 /**
- * 统计工作时长
+ * 统计工作时长（废弃）
  *
  * @author yutyi
  * @date 2020/06/03

@@ -30,6 +30,11 @@ public class DeviceStatusCountTaskController {
     @Autowired
     private DeviceStatusCountService deviceStatusCountService;
 
+    /**
+     * 废弃
+     * @param requestParam
+     * @return
+     */
     @RequestMapping("countMinute")
     public String countMinuteState (@RequestBody(required = false) String requestParam) {
         if (StringUtils.isEmpty(requestParam)) {
@@ -64,6 +69,11 @@ public class DeviceStatusCountTaskController {
 
     }
 
+    /**
+     * 废弃
+     * @param requestParam
+     * @return
+     */
     @RequestMapping("countHour")
     public String countHourState (@RequestBody(required = false) String requestParam) {
         if (StringUtils.isEmpty(requestParam)) {
