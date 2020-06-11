@@ -2,6 +2,7 @@ package com.bme.task.dao.mysql;
 
 import com.bme.task.vo.DeviceStatus;
 import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Param;
 
 import java.util.Date;
 import java.util.List;
@@ -47,5 +48,6 @@ public interface DeviceStatusMapper {
      * @param interval
      * @return
      */
-    Integer update(List<Long> offList, Date createTime, long interval);
+    Integer update(@Param("offList") List<Long> offList,
+                   @Param("createTime") Date createTime, @Param("interval") long interval);
 }

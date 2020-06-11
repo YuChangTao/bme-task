@@ -38,7 +38,7 @@ public class DeviceStatusCountServiceImpl implements DeviceStatusCountService {
     public boolean countDeviceStatus(long startTime, long endTime, long interval) {
 
         List<DeviceStatus> list = deviceStatusMapper.selectDeviceList();
-        Set<String> keys = redisClientTemplate.keys("upDown:status:");
+        Set<String> keys = redisClientTemplate.keys("upDown:status:*");
 
         //数据是否已存在
         Date date = CommonUtil.toDate(CommonUtil.hourFormat.format(new Date(endTime)));
@@ -52,6 +52,7 @@ public class DeviceStatusCountServiceImpl implements DeviceStatusCountService {
                 device.setOutlineTime(interval);
                 offList.add(device.getDeviceId());
             }
+            device.setCreateTime(date);
         }
         int result;
         if (count > 0) {
